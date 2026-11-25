@@ -8,6 +8,6 @@
   },
   "dependencies": {
     "express": "^4.21.2",
-    "no-such-package-vyuh": "1.0.0"
+    "no-such-package-vyuh": "2.0.0"
   }
 }
