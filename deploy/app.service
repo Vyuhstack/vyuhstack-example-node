@@ -1,0 +1,15 @@
+# /etc/systemd/system/app.service
+[Unit]
+Description=VyuhStack example (Node.js)
+After=network.target
+
+[Service]
+User=vyuh-user
+WorkingDirectory=/opt/app
+ExecStart=/usr/bin/node server.js
+Environment=PORT=3000
+Environment=NODE_ENV=production
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
