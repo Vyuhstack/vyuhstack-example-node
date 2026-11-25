@@ -5,23 +5,28 @@ process was started from, so you can see each push go live.
 
 ## One-time VM setup
 
-Run on the VM with sudo:
+Run on the VM as a user with sudo (for example `vyuh-user`):
 
 ```bash
-apt update && apt install -y git
-curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt install -y nodejs
+sudo apt update && sudo apt install -y git
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && sudo apt install -y nodejs
 
 # deploys run as vyuh-user in a non-interactive shell: this must print a path
-runuser -l vyuh-user -c 'command -v npm && node -v'
+sudo runuser -l vyuh-user -c 'command -v npm && node -v'
 ```
+
+Put `sudo` on `bash`, not on `curl`: the setup script must run as root to add the
+NodeSource repository. If `node -v` shows v18 and `npm` is missing, Ubuntu's own
+Node package got installed instead; remove it with
+`sudo apt remove -y nodejs libnode109 nodejs-doc` and run the two lines again.
 
 Then connect the repo in VyuhStack (settings below) and click **Verify**, which
 clones it into `/opt/app`. After that, install the service:
 
 ```bash
-cp /opt/app/deploy/app.service /etc/systemd/system/app.service
-systemctl daemon-reload
-systemctl enable app
+sudo cp /opt/app/deploy/app.service /etc/systemd/system/app.service
+sudo systemctl daemon-reload
+sudo systemctl enable app
 ```
 
 The first deploy installs the dependencies and starts it.
@@ -40,8 +45,8 @@ The first deploy installs the dependencies and starts it.
 Application port in VyuhStack: `3000`.
 
 `sudo -n` needs passwordless sudo for `vyuh-user`. VyuhStack VMs have it by
-default; check with `runuser -l vyuh-user -c 'sudo -n true && echo ok'`.
-Otherwise add a rule with `visudo -f /etc/sudoers.d/vyuhstack-deploy`:
+default; check with `sudo runuser -l vyuh-user -c 'sudo -n true && echo ok'`.
+Otherwise add a rule with `sudo visudo -f /etc/sudoers.d/vyuhstack-deploy`:
 
 ```
 vyuh-user ALL=(root) NOPASSWD: /usr/bin/systemctl restart app
